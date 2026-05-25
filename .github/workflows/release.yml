@@ -61,9 +61,6 @@ jobs:
           - name: windows-arm64
             os: windows-11-arm
             target: aarch64-pc-windows-msvc
-          - name: macos-x64
-            os: macos-13
-            target: x86_64-apple-darwin
           - name: macos-arm64
             os: macos-15
             target: aarch64-apple-darwin
@@ -90,10 +87,15 @@ jobs:
             libwebkit2gtk-4.1-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \
-            patchelf
+            patchelf \
+            xdg-utils
 
       - name: Install frontend dependencies
         run: bun install --frozen-lockfile
+
+      - name: Install Windows arm64 Tauri CLI native binding
+        if: matrix.target == 'aarch64-pc-windows-msvc'
+        run: bun add --dev --no-save @tauri-apps/cli-win32-arm64-msvc@2.11.2
 
       - name: Build and upload Tauri bundle
         uses: tauri-apps/tauri-action@v0

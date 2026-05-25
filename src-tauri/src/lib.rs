@@ -669,7 +669,7 @@ fn docker_group_name(container: &DockerContainer) -> String {
     let labels = parse_docker_labels(&container.labels);
     labels
         .get("com.docker.compose.project")
-        .map(|project| format!("Compose: {project}"))
+        .cloned()
         .or_else(|| {
             first_csv_value(&container.networks).map(|network| format!("Network: {network}"))
         })
@@ -1087,10 +1087,7 @@ mod tests {
             ports: "0.0.0.0:6379->6379/tcp".into(),
         };
 
-        assert_eq!(
-            docker_group_name(&compose_container),
-            "Compose: maf-harness"
-        );
+        assert_eq!(docker_group_name(&compose_container), "maf-harness");
         assert_eq!(
             docker_group_name(&network_container),
             "Network: local_default"
